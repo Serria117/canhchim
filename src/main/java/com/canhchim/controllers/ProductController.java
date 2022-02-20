@@ -3,17 +3,12 @@ package com.canhchim.controllers;
 import com.canhchim.models.PrdImage;
 import com.canhchim.models.PrdProduct;
 import com.canhchim.models.dto.ProductDto;
-import com.canhchim.repositories.PrdProductRepository;
 import com.canhchim.response.ResponseObject;
 import com.canhchim.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
@@ -39,7 +34,20 @@ public class ProductController {
                 ));
     }
 
-    private ProductDto convertToProductDto(PrdProduct p){
+    @GetMapping("{id}")
+    public ResponseEntity<ResponseObject> findById(@PathVariable long id) {
+        PrdProduct foundProduct = productService.findById(id).orElse(null);
+        return foundProduct == null ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.ok().body(new ResponseObject(
+                        200,
+                        "OK",
+                        convertToProductDto(foundProduct)
+                ));
+    }
+
+
+    private ProductDto convertToProductDto(PrdProduct p) {
         return new ProductDto(
                 p.getId(),
                 p.getPrdCategories().getId(),
