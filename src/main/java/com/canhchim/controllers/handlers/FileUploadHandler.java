@@ -13,7 +13,8 @@ public class FileUploadHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ResponseObject> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException e){
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-                .body(new ResponseObject(406,"NOT_ACCEPT","One or more files are too large!"));
+                .body(new ResponseObject(406,"NOT_ACCEPT",
+                        new String[]{"One or more files are too large.", e.getMessage()}));
     }
 
 }
