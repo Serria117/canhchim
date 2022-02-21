@@ -39,6 +39,11 @@ public class ProductService implements IService<PrdProduct> {
         return productRepository.searchByNameOrCategory(search, paging);
     }
 
+    public Page<PrdProduct> findByShop(long shopId, int page, int size){
+        Pageable paging = PageRequest.of(page, size);
+        return productRepository.findByShopId(shopId, paging);
+    }
+
     @Override
     public PrdProduct save(PrdProduct savingProduct) {
         return productRepository.save(savingProduct);
