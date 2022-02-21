@@ -37,6 +37,7 @@ public class ProductController {
     }
 
     //Display products of a shop (by shop id):
+    @GetMapping("")
     public ResponseEntity<ResponseObject> findAllByShop(
             @RequestParam(name = "shopId") int shopId,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -53,6 +54,24 @@ public class ProductController {
                 ));
     }
 
+    //Display product by Category
+    @GetMapping("")
+    public ResponseEntity<ResponseObject> findAllByCategory(
+            @RequestParam(name = "categoryId") int categoryId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage ){
+        Page<PrdProduct> result = productService.findByCategory(categoryId, page, itemPerPage);
+
+        return result.isEmpty() ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.ok().body(new ResponseObject(
+                        200,
+                        "OK",
+                        result.map(this::convertToProductDto)
+                ));
+    }
+
+
     //Display an individual product by id:
     @GetMapping("")
     public ResponseEntity<ResponseObject> findById(@RequestParam("id") long id) {
@@ -68,7 +87,7 @@ public class ProductController {
 
     //Add product:
 
-
+    //DTO converter
     private ProductDto convertToProductDto(PrdProduct p) {
         return new ProductDto(
                 p.getId(),
