@@ -22,7 +22,4 @@ public class ProductDto implements Serializable {
     private Long shopId;
     private String shopName;
     private Set<String> imageUrl = new HashSet<>();
-
-
-
 }

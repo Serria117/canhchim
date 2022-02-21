@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin
 @RequestMapping(path = "/product")
 public class ProductController {
 
     @Autowired
     ProductService productService;
 
+    //Display all product (maybe in the home page)
     @GetMapping("all")
     public ResponseEntity<ResponseObject> getAllProduct(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -34,8 +36,9 @@ public class ProductController {
                 ));
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<ResponseObject> findById(@PathVariable long id) {
+    //Display an individual product by id:
+    @GetMapping("")
+    public ResponseEntity<ResponseObject> findById(@RequestParam("id") long id) {
         PrdProduct foundProduct = productService.findById(id).orElse(null);
         return foundProduct == null ?
                 ResponseEntity.noContent().build() :
