@@ -50,10 +50,10 @@ public class ProductController {
         Page<PrdProduct> result = productService.findByShop(shopId, page, itemPerPage);
 
         return result.isEmpty() ?
-                ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseObject(
-                        204,
-                        "N0_CONTENT",
-                        "Nothing to display.")) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(
+                        404,
+                        "N0T_FOUND",
+                        "Shop id does not exist.")) :
                 ResponseEntity.ok().body(new ResponseObject(
                         200,
                         "OK",
@@ -68,12 +68,12 @@ public class ProductController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage) {
         Page<PrdProduct> result = productService.findByCategory(categoryId, page, itemPerPage);
-
+        System.out.println(result.isEmpty());
         return result.isEmpty() ?
-                ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseObject(
-                        204,
-                        "N0_CONTENT",
-                        "Nothing to display.")) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(
+                        404,
+                        "N0T_FOUND",
+                        "Category id does not matched.")) :
                 ResponseEntity.ok().body(new ResponseObject(
                         200,
                         "OK",
