@@ -30,7 +30,7 @@ public class FileController {
             return ResponseEntity.ok().body(new ResponseObject(200, "OK", fileName));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
-                    .body(new ResponseObject(417, "FAILED", "Failed to upload files."));
+                    .body(new ResponseObject(417, "FAILED", e.getMessage()));
         }
     }
 

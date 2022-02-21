@@ -49,6 +49,9 @@ public class ProductController {
                 ));
     }
 
+    //Add product:
+
+
 
     private ProductDto convertToProductDto(PrdProduct p) {
         return new ProductDto(
