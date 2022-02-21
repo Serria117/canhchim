@@ -22,7 +22,7 @@ public class ProductController {
     ProductService productService;
 
     //Display all product (maybe in the home page)
-    @GetMapping("all")
+    @GetMapping("")
     public ResponseEntity<ResponseObject> getAllProduct(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage) {
@@ -98,19 +98,9 @@ public class ProductController {
                 ));
     }
 
-    //Add product:
 
     //DTO converter
     private ProductDto convertToProductDto(PrdProduct p) {
-        return new ProductDto(
-                p.getId(),
-                p.getPrdCategories().getId(),
-                p.getPrdCategories().getCategoryName(),
-                p.getProductName(),
-                p.getProductPrice(),
-                p.getShpShop().getId(),
-                p.getShpShop().getShopName(),
-                p.getPrdImages().stream().map(PrdImage::getImageUrl).collect(Collectors.toSet())
-        );
+        return new ProductDto(p);
     }
 }

@@ -10,7 +10,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "SHP_User")
-@Setter @Getter
+@Setter
+@Getter
 public class ShpUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class ShpUser {
     @Column(name = "phone", nullable = false, length = 12)
     private String phone;
 
-    @Column(name = "email", nullable = false, length = 60)
+    @Column(name = "email", nullable = false, length = 60, unique = true)
     private String email;
 
     @Column(name = "password", nullable = false, length = 100)

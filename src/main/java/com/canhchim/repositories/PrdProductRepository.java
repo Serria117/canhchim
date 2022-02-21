@@ -3,10 +3,10 @@ package com.canhchim.repositories;
 import com.canhchim.models.PrdProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface PrdProductRepository extends PagingAndSortingRepository<PrdProduct, Long> {
+public interface PrdProductRepository extends JpaRepository<PrdProduct, Long> {
     @Query("""
             select p from PrdProduct p
             where p.productName like concat('%', ?1, '%') or p.prdCategories.categoryName like concat('%', ?1, '%')""")
