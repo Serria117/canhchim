@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
 @RestController
@@ -36,7 +35,7 @@ public class OrderController {
     @PostMapping("add/{id}")
     public ResponseEntity<?> add(
             @PathVariable long id,
-            @RequestParam("quantity") @Min(1) int quantity) {
+            @RequestParam("quantity") @Min(value = 1, message = "Quantity must be greater than 0.") int quantity) {
         PrdProduct product = productService.findById(id).orElse(null);
         if (product != null) {
             OrderItem item = new OrderItem(product, quantity);
@@ -56,7 +55,7 @@ public class OrderController {
     @PostMapping("update/{id}")
     public ResponseEntity<?> update(
             @PathVariable long id,
-            @RequestParam @Min(0) int quantity) {
+            @RequestParam @Min(value = 0, message = "Quantity to be updated must be greater than or equal to 0.") int quantity) {
         return orderService.updateCart(id, quantity) == null ?
                 ResponseEntity.badRequest().build() :
                 ResponseEntity.ok().body(

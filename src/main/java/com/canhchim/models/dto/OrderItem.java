@@ -13,7 +13,6 @@ public class OrderItem {
     private long productId;
     private String productName;
     private long price;
-    @Min(value = 0, message="Quantity can not be negative number.")
     private int quantity;
 
     public OrderItem(PrdProduct p, int quantity) {

@@ -13,7 +13,7 @@ public class CartValidationHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> ConstrainExceptionHandler(ConstraintViolationException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Value must be greater than 0.");
+                .body(e.getMessage());
     }
 
 }
