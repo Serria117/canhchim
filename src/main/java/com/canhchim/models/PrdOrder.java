@@ -1,11 +1,13 @@
 package com.canhchim.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,8 @@ public class PrdOrder {
     private Long shipCompanyId;
 
     @Column(name = "order_date1", nullable = false)
-    private Instant orderDate1;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDateTime orderDate1;
 
     @Column(name = "order_date2", nullable = false)
     private Long orderDate2;
@@ -80,6 +83,10 @@ public class PrdOrder {
     )
     private List<PrdProduct> listOrderProducts = new ArrayList<>();
 
+    @Transient
+    public int getQuantity(){
+        return this.listOrderProducts.size();
+    }
 
 
     //TODO Reverse Engineering! Migrate other columns to the entity

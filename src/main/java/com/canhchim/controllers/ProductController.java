@@ -1,6 +1,5 @@
 package com.canhchim.controllers;
 
-import com.canhchim.models.PrdImage;
 import com.canhchim.models.PrdProduct;
 import com.canhchim.models.dto.ProductDto;
 import com.canhchim.response.ResponseObject;
@@ -10,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -81,7 +78,6 @@ public class ProductController {
                 ));
     }
 
-
     //Display an individual product by id:
     @GetMapping("item")
     public ResponseEntity<ResponseObject> findById(@RequestParam("id") long id) {
@@ -97,7 +93,6 @@ public class ProductController {
                         convertToProductDto(foundProduct)
                 ));
     }
-
 
     //DTO converter
     private ProductDto convertToProductDto(PrdProduct p) {
