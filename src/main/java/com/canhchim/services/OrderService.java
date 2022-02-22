@@ -17,7 +17,7 @@ public class OrderService implements IOrderService {
     @Autowired
     PrdOrderRepository orderRepository;
 
-    private Map<Long, OrderItem> cart = new HashMap<>();
+    private final Map<Long, OrderItem> cart = new HashMap<>();
 
     //add item into cart map:
     @Override
