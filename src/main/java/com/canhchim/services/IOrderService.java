@@ -17,7 +17,7 @@ public interface IOrderService {
 
     OrderItem updateCart(long id, int quantity);
 
-    double sumTotal();
+    long sumTotal();
 
-    int countItem();
+    int productCount();
 }

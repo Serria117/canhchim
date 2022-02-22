@@ -2,6 +2,7 @@ package com.canhchim.controllers;
 
 import com.canhchim.models.PrdProduct;
 import com.canhchim.models.dto.OrderItem;
+import com.canhchim.response.CartResponse;
 import com.canhchim.services.OrderService;
 import com.canhchim.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,12 @@ public class OrderController {
 
     @GetMapping("list")
     public ResponseEntity<?> listItem() {
-        return ResponseEntity.ok().body(orderService.getOrderList());
+        return ResponseEntity.ok().body(new CartResponse(
+                orderService.getOrderList(),
+                orderService.sumTotal(),
+                orderService.productCount(),
+                orderService.itemCount()
+        ));
     }
 
     @PostMapping("add/{id}")
@@ -45,7 +51,7 @@ public class OrderController {
     }
 
     @PostMapping("remove/{id}")
-    public ResponseEntity<?> remove(@PathVariable long id){
+    public ResponseEntity<?> remove(@PathVariable long id) {
         return orderService.remove(id) == null ?
                 ResponseEntity.badRequest().build() :
                 ResponseEntity.ok().body(orderService.getOrderList());

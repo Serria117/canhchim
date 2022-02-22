@@ -61,13 +61,17 @@ public class OrderService implements IOrderService {
 
     //Calculate total:
     @Override
-    public double sumTotal() {
-        return cart.values().stream().mapToDouble(i -> i.getQuantity() * i.getPrice()).sum();
+    public long sumTotal() {
+        return cart.values().stream().mapToLong(i -> i.getQuantity() * i.getPrice()).sum();
     }
 
     //Count:
     @Override
-    public int countItem() {
+    public int productCount() {
         return cart.values().size();
+    }
+
+    public int itemCount(){
+        return cart.values().stream().mapToInt(OrderItem::getQuantity).sum();
     }
 }
