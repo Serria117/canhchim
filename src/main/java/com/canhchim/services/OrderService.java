@@ -51,7 +51,7 @@ public class OrderService implements IOrderService {
     public OrderItem updateCart(long id, int quantity) {
         OrderItem item = cart.get(id);
         if (item != null) {
-            item.setQuantity(item.getQuantity() + quantity);
+            item.setQuantity(quantity);
             if (item.getQuantity() == 0) {
                 cart.remove(id);
             }
