@@ -8,8 +8,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "PRD_Order")
@@ -75,19 +74,9 @@ public class PrdOrder {
     @Column(name = "customer_name", nullable = false, length = 12)
     private String customerName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "PRD_Order_detail",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<PrdProduct> listOrderProducts = new ArrayList<>();
-
-    @Transient
-    public int getQuantity(){
-        return this.listOrderProducts.size();
-    }
+    @OneToMany(mappedBy = "order")
+    private Set<PrdOrderDetail> orderList = new HashSet<>();
 
 
-    //TODO Reverse Engineering! Migrate other columns to the entity
+//TODO Reverse Engineering! Migrate other columns to the entity
 }

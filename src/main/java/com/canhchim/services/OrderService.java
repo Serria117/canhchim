@@ -1,14 +1,19 @@
 package com.canhchim.services;
 
+import com.canhchim.models.CtmCustomer;
+import com.canhchim.models.PrdOrder;
+import com.canhchim.models.PrdOrderDetail;
+import com.canhchim.models.PrdProduct;
 import com.canhchim.models.dto.OrderItem;
+import com.canhchim.repositories.CtmCustomerRepository;
 import com.canhchim.repositories.PrdOrderRepository;
+import com.canhchim.repositories.PrdProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @SessionScope
@@ -16,6 +21,12 @@ public class OrderService implements IOrderService {
 
     @Autowired
     PrdOrderRepository orderRepository;
+
+    @Autowired
+    PrdProductRepository productRepository;
+    
+    @Autowired
+    CtmCustomerRepository customerRepository;
 
     private final Map<Long, OrderItem> cart = new HashMap<>();
 
@@ -69,6 +80,30 @@ public class OrderService implements IOrderService {
     @Override
     public int productCount() {
         return cart.values().size();
+    }
+
+    //Check out:
+    public PrdOrder checkOut(long customerId){
+        if(cart.isEmpty()) {
+            return null;
+        }
+        PrdOrder createdOrder = new PrdOrder();
+        CtmCustomer customer = customerRepository.findById(customerId).orElse(null);
+        
+        createdOrder.setOrderDate1(LocalDateTime.now());
+        createdOrder.setCtmCustomer(customer);
+        Set<PrdOrderDetail> orderList = new HashSet<>();
+
+        cart.forEach((id, item) -> {
+            PrdOrderDetail od = new PrdOrderDetail();
+            od.setProduct(productRepository.findById(id).orElse(null));
+            od.setProductQuantity(item.getQuantity());
+            od.setProductSalePrice((int)item.getPrice());
+
+            orderList.add(od);
+        });
+        createdOrder.setOrderList(orderList);
+        return createdOrder;
     }
 
     public int itemCount(){

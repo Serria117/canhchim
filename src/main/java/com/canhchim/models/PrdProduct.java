@@ -2,13 +2,11 @@ package com.canhchim.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "PRD_Products", indexes = {
@@ -70,10 +68,26 @@ public class PrdProduct {
     @OneToMany(mappedBy = "product")
     private Set<PrdImage> prdImages = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "listOrderProducts")
-    private List<PrdOrder> listOrder = new ArrayList<>();
-
     @ManyToMany(mappedBy = "listInputProducts")
     private  List<PrdInput> listInput = new ArrayList<>();
 
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        PrdProduct that = (PrdProduct) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
