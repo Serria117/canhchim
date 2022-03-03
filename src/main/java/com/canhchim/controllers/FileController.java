@@ -34,8 +34,9 @@ public class FileController {
         }
     }
 
+    //This route resolve URL for file
     @GetMapping("{filename:.+}")
-    public ResponseEntity<Resource> getFile(@PathVariable("filename") String filename) {
+    public ResponseEntity<Resource> readFile(@PathVariable("filename") String filename) {
         Resource file = fileStorageService.read(filename);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)

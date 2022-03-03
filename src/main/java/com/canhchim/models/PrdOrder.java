@@ -6,9 +6,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "PRD_Order")
@@ -68,10 +68,10 @@ public class PrdOrder {
     @Column(name = "shipment_note", nullable = false, length = 100)
     private String shipmentNote;
 
-    @Column(name = "customer_phone", nullable = false, length = 60)
+    @Column(name = "customer_phone", nullable = false, length = 12)
     private String customerPhone;
 
-    @Column(name = "customer_name", nullable = false, length = 12)
+    @Column(name = "customer_name", nullable = false, length = 60)
     private String customerName;
 
     @OneToMany(mappedBy = "order")

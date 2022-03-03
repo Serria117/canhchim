@@ -55,7 +55,10 @@ public class OrderController {
     @PostMapping("update/{id}")
     public ResponseEntity<?> update(
             @PathVariable long id,
-            @RequestParam @Min(value = 0, message = "Quantity to be updated must be greater than or equal to 0.") int quantity) {
+            @RequestParam @Min(
+                    value = 0,
+                    message = "Quantity to be updated must be greater than or equal to 0."
+            ) int quantity) {
         return orderService.updateCart(id, quantity) == null ?
                 ResponseEntity.badRequest().build() :
                 ResponseEntity.ok().body(

@@ -5,15 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
-
 @Data
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderItem {
     private long productId;
     private String productName;
     private long price;
     private int quantity;
+    private int discountPrice;
 
     public OrderItem(PrdProduct p, int quantity) {
         this.productId = p.getId();
