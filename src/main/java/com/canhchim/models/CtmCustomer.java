@@ -13,6 +13,7 @@ import java.util.Set;
 @Setter
 public class CtmCustomer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
