@@ -1,4 +1,4 @@
-package com.canhchim.response;
+package com.canhchim.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

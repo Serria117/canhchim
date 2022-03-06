@@ -19,6 +19,9 @@ public class CtmCustomer {
     @Column(name = "customer_name", nullable = false, length = 60)
     private String customerName;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "phone", nullable = false, length = 12)
     private String phone;
 

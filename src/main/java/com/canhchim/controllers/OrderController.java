@@ -2,11 +2,12 @@ package com.canhchim.controllers;
 
 import com.canhchim.models.PrdProduct;
 import com.canhchim.models.dto.OrderItem;
-import com.canhchim.response.CartResponse;
+import com.canhchim.models.dto.CartDto;
 import com.canhchim.services.OrderService;
 import com.canhchim.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,9 @@ public class OrderController {
     ProductService productService;
 
     @GetMapping("list")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> listItem() {
-        return ResponseEntity.ok().body(new CartResponse(
+        return ResponseEntity.ok().body(new CartDto(
                 orderService.getOrderList(),
                 orderService.sumTotal(),
                 orderService.productCount(),
@@ -33,6 +35,7 @@ public class OrderController {
     }
 
     @PostMapping("add/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> add(
             @PathVariable long id,
             @RequestParam("quantity") @Min(value = 1, message = "Quantity must be greater than 0.") int quantity) {
@@ -41,7 +44,7 @@ public class OrderController {
             OrderItem item = new OrderItem(product, quantity);
             orderService.addToCart(item);
             return ResponseEntity.ok().body(
-                    new CartResponse(
+                    new CartDto(
                             orderService.getOrderList(),
                             orderService.sumTotal(),
                             orderService.productCount(),
@@ -53,6 +56,7 @@ public class OrderController {
     }
 
     @PostMapping("update/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> update(
             @PathVariable long id,
             @RequestParam @Min(
@@ -62,7 +66,7 @@ public class OrderController {
         return orderService.updateCart(id, quantity) == null ?
                 ResponseEntity.badRequest().build() :
                 ResponseEntity.ok().body(
-                        new CartResponse(
+                        new CartDto(
                                 orderService.getOrderList(),
                                 orderService.sumTotal(),
                                 orderService.productCount(),
@@ -72,11 +76,12 @@ public class OrderController {
     }
 
     @PostMapping("remove/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> remove(@PathVariable long id) {
         return orderService.remove(id) == null ?
                 ResponseEntity.badRequest().build() :
                 ResponseEntity.ok().body(
-                        new CartResponse(
+                        new CartDto(
                                 orderService.getOrderList(),
                                 orderService.sumTotal(),
                                 orderService.productCount(),

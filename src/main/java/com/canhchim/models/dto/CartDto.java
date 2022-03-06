@@ -1,4 +1,4 @@
-package com.canhchim.response;
+package com.canhchim.models.dto;
 
 import com.canhchim.models.dto.OrderItem;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,8 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartResponse {
+public class CartDto
+{
     Collection<OrderItem> orderList;
     long total;
     int productCount;

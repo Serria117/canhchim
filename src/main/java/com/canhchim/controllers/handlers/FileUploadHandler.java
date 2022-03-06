@@ -1,6 +1,6 @@
 package com.canhchim.controllers.handlers;
 
-import com.canhchim.response.ResponseObject;
+import com.canhchim.payload.ResponseObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

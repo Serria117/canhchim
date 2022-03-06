@@ -86,26 +86,26 @@ public class OrderService implements IOrderService
         return cart.values().size();
     }
 
-    //Check out:
-    public PrdOrder checkOut(long customerId)
+    //Check out: create each order detail and add to the order
+    public PrdOrder checkOut(long customerId) throws Exception
     {
-        if (cart.isEmpty()) {
-            return null;
-        }
+        if (cart.isEmpty()) return null;
+
         PrdOrder createdOrder = new PrdOrder();
-        CtmCustomer customer = customerRepository.findById(customerId).orElse(null);
+        CtmCustomer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new Exception("Invalid customer ID."));
 
         createdOrder.setOrderDate1(LocalDateTime.now());
         createdOrder.setCtmCustomer(customer);
         Set<PrdOrderDetail> orderList = new HashSet<>();
 
         cart.forEach((id, item) -> {
-            PrdOrderDetail od = new PrdOrderDetail();
-            od.setProduct(productRepository.findById(id).orElse(null));
-            od.setProductQuantity(item.getQuantity());
-            od.setProductSalePrice((int) item.getPrice());
+            PrdOrderDetail oDetail = new PrdOrderDetail();
+            oDetail.setProduct(productRepository.findById(id).orElse(null));
+            oDetail.setProductQuantity(item.getQuantity());
+            oDetail.setProductSalePrice((int) item.getPrice());
 
-            orderList.add(od);
+            orderList.add(oDetail);
         });
         createdOrder.setOrderList(orderList);
         return createdOrder;

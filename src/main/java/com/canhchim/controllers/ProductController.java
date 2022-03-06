@@ -2,7 +2,7 @@ package com.canhchim.controllers;
 
 import com.canhchim.models.PrdProduct;
 import com.canhchim.models.dto.ProductDto;
-import com.canhchim.response.ResponseObject;
+import com.canhchim.payload.ResponseObject;
 import com.canhchim.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
