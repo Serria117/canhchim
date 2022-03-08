@@ -14,13 +14,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/customerauth")
@@ -54,25 +50,34 @@ public class CustomerAuthController
     @PostMapping("register")
     public ResponseEntity<?> customerRegister(@Valid @RequestBody CustomerRegisterDTO registerReq)
     {
-        Optional<CtmCustomer> findName = customerService.findCustomerByUsername(registerReq.getUsername());
-        Optional<CtmCustomer> findPhone = customerService.findCustomerPhone(registerReq.getPhone());
-        String duplicateUsername = "";
-        String duplicatePhone = "";
-        if (findName.isPresent()) {
-            duplicateUsername = "Username has already been taken";
-        }
-        if (findPhone.isPresent()) {
-            duplicatePhone = "Phone has already been taken";
-        }
-        if (!duplicateUsername.equals("") || !duplicatePhone.equals("")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new String[]{duplicateUsername, duplicatePhone});
-        }
 
         CtmCustomer newCustomer = new CtmCustomer();
         newCustomer.setCustomerName(registerReq.getUsername());
         newCustomer.setPhone(registerReq.getPhone());
         newCustomer.setPassword(passwordEncoder.encode(registerReq.getPassword()));
 
-        return ResponseEntity.status(HttpStatus.OK).body(customerService.save(newCustomer));
+        try {
+            var saveCustomer = customerService.register(newCustomer);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Customer saved");
+    }
+
+    @PostMapping("checkusername")
+    public ResponseEntity<?> checkUsername(@RequestParam String username)
+    {
+        if (customerService.usernameExist(username)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exist.");
+        }
+        return ResponseEntity.ok("Username is valid.");
+    }
+
+    public ResponseEntity<?> checkPhone(@RequestParam String phone)
+    {
+        if (customerService.phoneExist(phone)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Phone number already exist.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Phone number is valid.");
     }
 }

@@ -1,9 +1,9 @@
 package com.canhchim.services;
 
+import com.canhchim.customexception.UsernameAlreadyExistException;
 import com.canhchim.models.CtmCustomer;
 import com.canhchim.repositories.CtmCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Optionals;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -41,11 +41,29 @@ public class CustomerService implements UserDetailsService
         return customerRepository.findByCustomerName(username);
     }
 
-    public Optional<CtmCustomer> findCustomerPhone(String phone){
+    public Optional<CtmCustomer> findCustomerPhone(String phone)
+    {
         return customerRepository.findByPhone(phone);
     }
 
-    public CtmCustomer save(CtmCustomer customer){
+    public CtmCustomer register(CtmCustomer customer) throws UsernameAlreadyExistException
+    {
+        if(usernameExist(customer.getCustomerName())) {
+            throw new UsernameAlreadyExistException("Username has already been taken.");
+        }
+        if(phoneExist(customer.getPhone())) {
+            throw new UsernameAlreadyExistException("Phone has already been registered.");
+        }
+
         return customerRepository.save(customer);
+    }
+
+    public boolean usernameExist(String username)
+    {
+        return customerRepository.findByPhone(username).isPresent();
+    }
+
+    public boolean phoneExist(String phone){
+        return customerRepository.findByPhone(phone).isPresent();
     }
 }
