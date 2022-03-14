@@ -72,10 +72,9 @@ public class PrdProduct {
     private  List<PrdInput> listInput = new ArrayList<>();
 
 
-
-
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) {
             return true;
         }

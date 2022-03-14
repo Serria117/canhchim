@@ -13,16 +13,24 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @RequestMapping(path = "/product")
-public class ProductController {
+public class ProductController
+{
 
     @Autowired
     ProductService productService;
 
-    //Display all product (maybe in the home page)
+    /**
+     * Display all product (maybe in the home page)
+     *
+     * @param page
+     * @param itemPerPage
+     * @return ResponseEntity<?>
+     */
     @GetMapping("")
     public ResponseEntity<ResponseObject> getAllProduct(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage) {
+            @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage)
+    {
         Page<PrdProduct> result = productService.findAll(page, itemPerPage);
 
         return result.isEmpty() ?
@@ -37,13 +45,21 @@ public class ProductController {
                 ));
     }
 
-    //Display products of a shop (by shop id):
+    /**
+     * Display products of a shop (by shop id):
+     *
+     * @param shopId
+     * @param page
+     * @param itemPerPage
+     * @return
+     */
     @GetMapping("shop")
     public ResponseEntity<ResponseObject> findAllByShop(
             @RequestParam(name = "shopId") int shopId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage
-    ) {
+    )
+    {
         Page<PrdProduct> result = productService.findByShop(shopId, page, itemPerPage);
 
         return result.isEmpty() ?
@@ -63,7 +79,8 @@ public class ProductController {
     public ResponseEntity<ResponseObject> findAllByCategory(
             @RequestParam(name = "categoryId") int categoryId,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage) {
+            @RequestParam(name = "itemPerPage", defaultValue = "12") int itemPerPage)
+    {
         Page<PrdProduct> result = productService.findByCategory(categoryId, page, itemPerPage);
         System.out.println(result.isEmpty());
         return result.isEmpty() ?
@@ -78,9 +95,15 @@ public class ProductController {
                 ));
     }
 
-    //Display an individual product by id:
+    /**
+     * Display an individual product by id:
+     *
+     * @param id
+     * @return The response entity
+     */
     @GetMapping("item")
-    public ResponseEntity<ResponseObject> findById(@RequestParam("id") long id) {
+    public ResponseEntity<ResponseObject> findById(@RequestParam("id") long id)
+    {
         PrdProduct foundProduct = productService.findById(id).orElse(null);
         return foundProduct == null ?
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObject(
@@ -94,8 +117,15 @@ public class ProductController {
                 ));
     }
 
+    public ResponseEntity<?> addProduct(@RequestBody ProductDto newProduct)
+    {
+
+        return null;
+    }
+
     //DTO converter
-    private ProductDto convertToProductDto(PrdProduct p) {
+    private ProductDto convertToProductDto(PrdProduct p)
+    {
         return new ProductDto(p);
     }
 }

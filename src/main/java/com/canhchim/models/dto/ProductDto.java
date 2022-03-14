@@ -2,6 +2,7 @@ package com.canhchim.models.dto;
 
 import com.canhchim.models.PrdImage;
 import com.canhchim.models.PrdProduct;
+import com.canhchim.models.ShpUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class ProductDto implements Serializable {
     private String productName;
     private Long productPrice;
     private Long shopId;
+    private ShpUser inputUser;
     private String shopName;
     private Set<String> imageUrl = new HashSet<>();
 

@@ -48,11 +48,11 @@ public class CustomerService implements UserDetailsService
 
     public CtmCustomer register(CtmCustomer customer) throws UsernameAlreadyExistException
     {
-        if(usernameExist(customer.getCustomerName())) {
+        if (usernameExist(customer.getCustomerName())) {
             throw new UsernameAlreadyExistException("Username has already been taken.");
         }
-        if(phoneExist(customer.getPhone())) {
-            throw new UsernameAlreadyExistException("Phone has already been registered.");
+        if (phoneExist(customer.getPhone())) {
+            throw new UsernameAlreadyExistException("Phone number has already been registered.");
         }
 
         return customerRepository.save(customer);
@@ -60,10 +60,11 @@ public class CustomerService implements UserDetailsService
 
     public boolean usernameExist(String username)
     {
-        return customerRepository.findByPhone(username).isPresent();
+        return customerRepository.findByCustomerName(username).isPresent();
     }
 
-    public boolean phoneExist(String phone){
+    public boolean phoneExist(String phone)
+    {
         return customerRepository.findByPhone(phone).isPresent();
     }
 }

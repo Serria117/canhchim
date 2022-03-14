@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface PrdCategoryRepository extends JpaRepository<PrdCategory, Long> {
+public interface PrdCategoryRepository extends JpaRepository<PrdCategory, Long>
+{
     @Query("select p from PrdCategory p where p.categoryName like concat('%', ?1, '%')")
     List<PrdCategory> searchByCategoryName(String categoryName);
 }
