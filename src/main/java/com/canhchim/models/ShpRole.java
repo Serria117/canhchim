@@ -20,11 +20,18 @@ public class ShpRole {
     @Column(name = "role_name", nullable = false, length = 20)
     private String roleName;
 
-    @ManyToMany
-    @JoinTable(name = "SHP_Function_of_role",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "func_id"))
-    private Set<ShpFunction> shpFunctions = new LinkedHashSet<>();
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "function_code", length = 10)
+    private String functionCode;
+
+
+//    @ManyToMany
+//    @JoinTable(name = "SHP_Function_of_role",
+//            joinColumns = @JoinColumn(name = "role_id"),
+//            inverseJoinColumns = @JoinColumn(name = "func_id"))
+//    private Set<ShpFunction> shpFunctions = new LinkedHashSet<>();
 
 
     //TODO Reverse Engineering! Migrate other columns to the entity

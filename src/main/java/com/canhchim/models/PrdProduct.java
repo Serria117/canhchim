@@ -8,13 +8,15 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.*;
 
+import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
+
 @Entity
-@Table(name = "PRD_Products", indexes = {
-        @Index(name = "product_code", columnList = "product_code", unique = true)
-})
+@Table(name = "PRD_Products")
 @Getter
 @Setter
-public class PrdProduct {
+public class PrdProduct
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -23,11 +25,7 @@ public class PrdProduct {
     @Column(name = "product_code", nullable = false, length = 50)
     private String productCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_type")
-    private PrdProductType prdProductType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_category")
     private PrdCategory prdCategories;
 
@@ -61,7 +59,7 @@ public class PrdProduct {
     @Column(name = "parent_product")
     private Long parentProduct;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = LAZY, optional = false)
     @JoinColumn(name = "shop_id", nullable = false)
     private ShpShop shpShop;
 
@@ -69,16 +67,34 @@ public class PrdProduct {
     private Set<PrdImage> prdImages = new LinkedHashSet<>();
 
     @ManyToMany(mappedBy = "listInputProducts")
-    private  List<PrdInput> listInput = new ArrayList<>();
+    private List<PrdInput> listInput = new ArrayList<>();
+
+    @Column(name = "product_price2")
+    private Long productPrice2;
+
+    @Column(name = "product_price3")
+    private Long productPrice3;
+
+    @Column(name = "has_top_up")
+    private Integer hasTopUp;
+
+    @Column(name = "is_top_up")
+    private Integer isTopUp;
+
+    @Column(name = "unitId")
+    private Integer unitId;
+
+    @Column(name = "is_multi_price", nullable = false)
+    private Integer isMultiPrice;
 
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals (Object o)
     {
-        if (this == o) {
+        if ( this == o ) {
             return true;
         }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+        if ( o == null || Hibernate.getClass(this) != Hibernate.getClass(o) ) {
             return false;
         }
         PrdProduct that = (PrdProduct) o;
@@ -86,7 +102,8 @@ public class PrdProduct {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode ()
+    {
         return getClass().hashCode();
     }
 }

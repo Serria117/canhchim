@@ -1,46 +1,126 @@
 package com.canhchim.services;
 
 import com.canhchim.models.ShpRole;
+import com.canhchim.models.ShpShopEmployee;
 import com.canhchim.models.ShpUser;
+import com.canhchim.payload.request.UserRegisterRequest;
+import com.canhchim.repositories.ShpRoleRepository;
+import com.canhchim.repositories.ShpShopEmployeeRepository;
+import com.canhchim.repositories.ShpShopRepository;
 import com.canhchim.repositories.ShpUserRepository;
-import com.canhchim.securityconfig.useraccount.CustomUserDetails;
+import com.canhchim.securityconfig.customuserdetail.CustomUserDetails;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Service @AllArgsConstructor
 public class UserService implements UserDetailsService
 {
-   @Autowired
     ShpUserRepository userRepository;
+    ShpShopRepository shopRepository;
+    ShpRoleRepository roleRepository;
+    ShpShopEmployeeRepository shopEmployeeRepository;
+
 
     /**
-     *
      * @param username
      * @return the userdetails
      * @throws UsernameNotFoundException
      */
-
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
+    public UserDetails loadUserByUsername (String username) throws UsernameNotFoundException
     {
         ShpUser user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username does not exist"));
+                                     .orElseThrow(() -> new UsernameNotFoundException("Username does not exist"));
         Set<GrantedAuthority> authorities = new HashSet<>();
-        user.getShpRoles()
-                .stream()
-                .map(ShpRole::getRoleName)
-                .forEach(roleName -> authorities.add(new SimpleGrantedAuthority(roleName)));
+        user.getRoles()
+            .stream()
+            .map(ShpRole::getRoleName)
+            .forEach(roleName -> authorities.add(new SimpleGrantedAuthority(roleName)));
         return new CustomUserDetails(
                 user.getUserName(),
                 user.getPassword(),
-                user.getShpShops(),
+                user.getShop().stream()
+                    .map(sh -> sh.getShop().getId())
+                    .collect(Collectors.toSet()),
                 authorities
         );
+    }
+
+    public ShpUser save (ShpUser newUser)
+    {
+        return userRepository.save(newUser);
+    }
+
+    public boolean register (UserRegisterRequest userRegister) throws Exception
+    {
+        Set<ShpRole> roles = new HashSet<>();
+        var newUser = new ShpUser();
+        newUser.setUserName(userRegister.getUsername());
+        newUser.setPassword(userRegister.getPassword());
+        newUser.setPhone(userRegister.getPhoneNumber());
+        newUser.setIsOwner(userRegister.getIsOwner());
+        newUser.setCitizenIdentity(userRegister.getCitizenIdentity());
+        newUser.setFullName(userRegister.getFullName());
+
+        if ( userRepository.existsByUserName(newUser.getUserName()) ) {
+            throw new Exception("Username already existed.");
+        }
+        if ( userRepository.existsByCitizenIdentity(newUser.getCitizenIdentity()) ) {
+            throw new Exception("Citizen ID already existed.");
+        }
+        if ( userRepository.existsByPhone(newUser.getPhone()) ) {
+            throw new Exception("Phone number already existed");
+        }
+        Arrays.asList(userRegister.getRoleId())
+              .forEach(role -> {
+                  roles.add(roleRepository.findById(role).orElse(null));
+              });
+
+        newUser.setRoles(roles);
+        try {
+            var savedUser = userRepository.save(newUser);
+
+            var shop = shopRepository.findById(userRegister.getShopId())
+                                     .orElseThrow(() -> new RuntimeException("Could not find shop Id."));
+            var shopEmp = new ShpShopEmployee();
+            shopEmp.setShop(shop);
+
+            shopEmp.setUser(savedUser);
+            shopEmployeeRepository.save(shopEmp);
+            return true;
+        }
+        catch ( Exception e ) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public Map<Long, Object> displayAllRole()
+    {
+        var roles = roleRepository.findAll();
+        Map<Long, Object> roleMap = new HashMap<>();
+        roles.forEach(r -> {
+            roleMap.put(r.getId(), r.getDescription());
+        });
+        return roleMap;
+    }
+
+    public ShpUser findByName (String name)
+    {
+        return userRepository.findByUserName(name).orElse(null);
+    }
+
+    public ShpUser findById(long userId)
+    {
+        return userRepository.findById(userId).orElse(null);
     }
 }

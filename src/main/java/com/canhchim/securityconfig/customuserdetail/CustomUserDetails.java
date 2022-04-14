@@ -1,4 +1,4 @@
-package com.canhchim.securityconfig.useraccount;
+package com.canhchim.securityconfig.customuserdetail;
 
 import com.canhchim.models.ShpShop;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,14 +11,14 @@ public class CustomUserDetails implements UserDetails
 {
     private final String username;
     private final String password;
-    private final Set<ShpShop> shops;
+    private final Set<Long> shopIds;
     Set<GrantedAuthority> authorities;
 
-    public CustomUserDetails(String username, String password, Set<ShpShop> shops, Set<GrantedAuthority> authorities)
+    public CustomUserDetails(String username, String password, Set<Long> shopIds, Set<GrantedAuthority> authorities)
     {
         this.username = username;
         this.password = password;
-        this.shops = shops;
+        this.shopIds = shopIds;
         this.authorities = authorities;
     }
 
@@ -34,9 +34,9 @@ public class CustomUserDetails implements UserDetails
         return this.password;
     }
 
-    public Set<ShpShop> getShops()
+    public Set<Long> getShopIds ()
     {
-        return shops;
+        return shopIds;
     }
 
     @Override

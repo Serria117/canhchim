@@ -1,13 +1,17 @@
-package com.canhchim.payload;
+package com.canhchim.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
-public class ResponseObject {
+public class ResponseObject implements Serializable
+{
     int responseCode;
     String message;
     Object data;
+
 }

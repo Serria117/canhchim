@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static javax.persistence.FetchType.EAGER;
+
 @Entity
 @Table(name = "SHP_User")
 @Setter
@@ -18,22 +20,22 @@ public class ShpUser {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "user_name", nullable = false, length = 20)
+    @Column(name = "user_name", nullable = false, unique = true, length = 20)
     private String userName;
 
-    @Column(name = "full_name", nullable = false, length = 100)
+    @Column(name = "full_name", length = 100)
     private String fullName;
 
-    @Column(name = "phone", nullable = false, length = 12)
+    @Column(name = "phone", nullable = false, unique = true, length = 12)
     private String phone;
 
-    @Column(name = "email", nullable = false, length = 60, unique = true)
+    @Column(name = "email", length = 60, unique = true)
     private String email;
 
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 
-    @Column(name = "citizen_identity", length = 100)
+    @Column(name = "citizen_identity", unique = true, length = 100)
     private String citizenIdentity;
 
     @Column(name = "address", length = 100)
@@ -43,7 +45,7 @@ public class ShpUser {
     private String userFunctionKey;
 
     @Column(name = "last_active_time", precision = 10)
-    private BigDecimal lastActiveTime;
+    private Long lastActiveTime;
 
     @Column(name = "active_duration")
     private Integer activeDuration;
@@ -60,17 +62,20 @@ public class ShpUser {
     @Column(name = "user_devices")
     private String userDevices;
 
-    @ManyToMany
+    @ManyToMany(fetch = EAGER)
     @JoinTable(name = "SHP_Role_of_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<ShpRole> shpRoles = new LinkedHashSet<>();
+    private Set<ShpRole> roles = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<PrdOrder> prdOrders = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "shpUser")
-    private Set<ShpShop> shpShops = new LinkedHashSet<>();
+    @OneToMany(fetch = EAGER, mappedBy = "user")
+    private Set<ShpShopEmployee> shop = new LinkedHashSet<>();
+
+    @Column(name = "is_owner", nullable = false)
+    private Integer isOwner;
 
     //TODO Reverse Engineering! Migrate other columns to the entity
 }

@@ -6,12 +6,15 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "SHP_Shop")
-@Getter @Setter
-public class ShpShop {
+@Getter
+@Setter
+public class ShpShop
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -19,10 +22,6 @@ public class ShpShop {
 
     @Column(name = "shop_name", nullable = false, length = 100)
     private String shopName;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private ShpUser shpUser;
 
     @Column(name = "full_address")
     private String fullAddress;
@@ -60,15 +59,24 @@ public class ShpShop {
     @Column(name = "key_salt", length = 100)
     private String keySalt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "approved_by_admin")
-    private SysAdmin sysAdmin;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "approved_by_admin")
+//    private SysAdmin sysAdmin;
 
     @OneToMany(mappedBy = "shop")
-    private Set<PrdOrder> prdOrders = new LinkedHashSet<>();
+    private Set<ShpShopEmployee> employee = new LinkedHashSet<>();
+
+//    @OneToMany(mappedBy = "shop")
+//    private Set<PrdOrder> prdOrders = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "shpShop")
     private Set<PrdProduct> prdProducts = new LinkedHashSet<>();
 
-     //TODO Reverse Engineering! Migrate other columns to the entity
+    @OneToMany(mappedBy = "shop")
+    private Set<PrdCategory> prdCategories = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "shop")
+    private Set<ShpZone> shpZones = new LinkedHashSet<>();
+
+    //TODO Reverse Engineering! Migrate other columns to the entity
 }

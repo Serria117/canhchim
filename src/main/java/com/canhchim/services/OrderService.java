@@ -1,10 +1,10 @@
 package com.canhchim.services;
 
-import com.canhchim.models.CtmCustomer;
 import com.canhchim.models.PrdOrder;
 import com.canhchim.models.PrdOrderDetail;
 import com.canhchim.models.dto.OrderItem;
 import com.canhchim.repositories.CtmCustomerRepository;
+import com.canhchim.repositories.PrdOrderDetailRepository;
 import com.canhchim.repositories.PrdOrderRepository;
 import com.canhchim.repositories.PrdProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,8 @@ public class OrderService implements IOrderService
     PrdProductRepository productRepository;
     @Autowired
     CtmCustomerRepository customerRepository;
+    @Autowired
+    PrdOrderDetailRepository orderDetailRepository;
 
     //add item into cart map:
     @Override
@@ -92,23 +94,27 @@ public class OrderService implements IOrderService
         if (cart.isEmpty()) return null;
 
         PrdOrder createdOrder = new PrdOrder();
-        CtmCustomer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new Exception("Invalid customer ID."));
 
         createdOrder.setOrderDate1(LocalDateTime.now());
-        createdOrder.setCtmCustomer(customer);
         Set<PrdOrderDetail> orderList = new HashSet<>();
 
         cart.forEach((id, item) -> {
             PrdOrderDetail oDetail = new PrdOrderDetail();
             oDetail.setProduct(productRepository.findById(id).orElse(null));
             oDetail.setProductQuantity(item.getQuantity());
-            oDetail.setProductSalePrice((int) item.getPrice());
+            oDetail.setProductSalePrice(item.getPrice());
 
             orderList.add(oDetail);
         });
         createdOrder.setOrderList(orderList);
         return createdOrder;
+    }
+
+    public void saveOrder(PrdOrder order, Set<PrdOrderDetail> orderList)
+    {
+        var o = orderRepository.save(order);
+        orderList.forEach(od -> od.setOrder(o));
+        orderDetailRepository.saveAll(orderList);
     }
 
     public int itemCount()

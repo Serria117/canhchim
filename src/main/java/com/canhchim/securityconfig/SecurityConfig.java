@@ -1,6 +1,7 @@
 package com.canhchim.securityconfig;
 
 import com.canhchim.services.CustomerService;
+import com.canhchim.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,42 +21,52 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
+    /**
+     * <p>Path that will get access by public (no authentication required)</p>
+     * <p>Use for testing new API</p>
+     */
+    private final String[] allowPublic = {
+            "/images/**",
+            "/shop-auth/login"
+    };
     @Autowired
     CustomerService customerService;
-
+    @Autowired
+    UserService userService;
     @Autowired
     JwtRequestFilter jwtRequestFilter;
 
     @Bean
-    public PasswordEncoder passwordEncoder()
+    public PasswordEncoder passwordEncoder ()
     {
         return new BCryptPasswordEncoder();
     }
 
     @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception
+    public AuthenticationManager authenticationManagerBean () throws Exception
     {
         return super.authenticationManagerBean();
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception
+    protected void configure (HttpSecurity http) throws Exception
     {
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/customerauth/login", "/customerauth/register").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+            .antMatchers(allowPublic).permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception
+    protected void configure (AuthenticationManagerBuilder auth) throws Exception
     {
         auth.userDetailsService(customerService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
 }

@@ -1,9 +1,9 @@
-package com.canhchim.controllers;
+package com.canhchim.controllers.general;
 
 import com.canhchim.models.CtmCustomer;
 import com.canhchim.models.dto.CustomerLoginRequestDTO;
 import com.canhchim.models.dto.CustomerRegisterDTO;
-import com.canhchim.payload.ResponseObject;
+import com.canhchim.payload.response.ResponseObject;
 import com.canhchim.securityconfig.JwtUtils;
 import com.canhchim.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(path = "/customerauth")
+@RequestMapping(path = "/customer-auth")
 public class CustomerAuthController
 {
     @Autowired

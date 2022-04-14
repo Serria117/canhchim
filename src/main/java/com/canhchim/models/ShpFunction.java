@@ -24,9 +24,9 @@ public class ShpFunction {
     @Column(name = "function_description", length = 100)
     private String functionDescription;
 
-    @ManyToMany(mappedBy = "shpFunctions")
-    @JsonIgnore
-    private Set<ShpRole> shpRoles = new LinkedHashSet<>();
+//    @ManyToMany(mappedBy = "shpFunctions")
+//    @JsonIgnore
+//    private Set<ShpRole> shpRoles = new LinkedHashSet<>();
 
     //TODO Reverse Engineering! Migrate other columns to the entity
 }

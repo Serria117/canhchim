@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface CtmCustomerRepository extends JpaRepository<CtmCustomer, Long> {
+public interface CtmCustomerRepository extends JpaRepository<CtmCustomer, Long>
+{
+
     Optional<CtmCustomer> findByCustomerName(String customerName);
 
     @Query("select c from CtmCustomer c where c.phone = ?1")

@@ -22,8 +22,5 @@ public class PrdProductType {
     @Column(name = "type_code", nullable = false)
     private Long typeCode;
 
-    @OneToMany(mappedBy = "prdProductType")
-    private Set<PrdProduct> prdProducts = new LinkedHashSet<>();
-
     //TODO Reverse Engineering! Migrate other columns to the entity
 }

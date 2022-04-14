@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -41,15 +42,16 @@ public class FileStorageService
         return Arrays.asList(new String[]{"png", "jpg", "jpeg", "gif"}).contains(ext.trim().toLowerCase());
     }
 
-    //Create an unique file name to avoid overriding file with the same name:
+    //Create a unique file name to avoid overriding file with the same name:
     private String uniqueFileName(MultipartFile file)
     {
         String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-        return UUID.randomUUID() + "." + ext;
+        String timeStamp = String.valueOf(Instant.now().toEpochMilli());
+        return timeStamp + "_" + UUID.randomUUID() + "." + ext;
     }
 
     //Store the file:
-    public String storeFile(MultipartFile file)
+    public String storeFile(MultipartFile file) throws RuntimeException
     {
         if (file.isEmpty()) {
             throw new RuntimeException("File is empty. Nothing to store.");

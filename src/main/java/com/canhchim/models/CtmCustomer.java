@@ -1,5 +1,6 @@
 package com.canhchim.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +21,7 @@ public class CtmCustomer {
     @Column(name = "customer_name", nullable = false, length = 60)
     private String customerName;
 
-    @Column(name = "password")
+    @Column(name = "password") @JsonIgnore
     private String password;
 
     @Column(name = "phone", nullable = false, length = 12)
@@ -32,8 +33,8 @@ public class CtmCustomer {
     @Column(name = "delivery_address")
     private String deliveryAddress;
 
-    @OneToMany(mappedBy = "ctmCustomer")
-    private Set<PrdOrder> prdOrders = new LinkedHashSet<>();
+    //@OneToMany(mappedBy = "ctmCustomer") @JsonIgnore
+    //private Set<PrdOrder> prdOrders = new LinkedHashSet<>();
 
     //TODO Reverse Engineering! Migrate other columns to the entity
 }
