@@ -2,7 +2,6 @@ package com.canhchim.securityconfig;
 
 import com.canhchim.services.CustomerService;
 import com.canhchim.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,28 +28,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
             "/images/**",
             "/shop-auth/login"
     };
-    @Autowired
     CustomerService customerService;
-    @Autowired
     UserService userService;
-    @Autowired
-    JwtRequestFilter jwtRequestFilter;
+    RequestFilter requestFilter;
+
+    public SecurityConfig(CustomerService customerService, UserService userService, RequestFilter requestFilter)
+    {
+        this.customerService = customerService;
+        this.userService = userService;
+        this.requestFilter = requestFilter;
+    }
 
     @Bean
-    public PasswordEncoder passwordEncoder ()
+    public PasswordEncoder passwordEncoder()
     {
         return new BCryptPasswordEncoder();
     }
 
     @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean () throws Exception
+    public AuthenticationManager authenticationManagerBean() throws Exception
     {
         return super.authenticationManagerBean();
     }
 
     @Override
-    protected void configure (HttpSecurity http) throws Exception
+    protected void configure(HttpSecurity http) throws Exception
     {
         http.csrf().disable();
         http.authorizeRequests()
@@ -60,11 +63,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
-    protected void configure (AuthenticationManagerBuilder auth) throws Exception
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception
     {
         auth.userDetailsService(customerService).passwordEncoder(passwordEncoder());
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder());

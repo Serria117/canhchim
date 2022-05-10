@@ -3,7 +3,7 @@ package com.canhchim.controllers.test;
 import com.canhchim.securityconfig.customuserdetail.CustomUserDetails;
 import com.canhchim.services.CustomerService;
 import com.canhchim.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,15 +16,14 @@ import java.util.TreeMap;
 
 @RestController
 @RequestMapping(path = "/test")
+@AllArgsConstructor
 public class TestController
 {
-    @Autowired
     CustomerService customerService;
-    @Autowired
     UserService userService;
 
     @GetMapping("user-detail")
-    public ResponseEntity<?> testUserDetail (Authentication auth)
+    public ResponseEntity<?> testUserDetail(Authentication auth)
     {
         if ( auth == null || !auth.isAuthenticated() ) {
             return ResponseEntity.badRequest().body("Please log in with your credential.");

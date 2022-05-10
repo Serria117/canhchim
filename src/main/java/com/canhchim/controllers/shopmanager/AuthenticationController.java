@@ -1,5 +1,6 @@
 package com.canhchim.controllers.shopmanager;
 
+import com.canhchim.payload.request.SetUserActionRequest;
 import com.canhchim.payload.request.UserLoginRequest;
 import com.canhchim.payload.request.UserRegisterRequest;
 import com.canhchim.payload.response.ResponseObject;
@@ -12,45 +13,47 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/shop-auth")
-public class LoginController
+public class AuthenticationController
 {
-    @Autowired
     AuthenticationManager authenticationManager;
-    @Autowired
     JwtUtils jwtUtils;
-    @Autowired
     UserService userService;
-    @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public AuthenticationController(AuthenticationManager authenticationManager,
+                                    JwtUtils jwtUtils,
+                                    UserService userService,
+                                    PasswordEncoder passwordEncoder)
+    {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     /**
-     * REGISTER NEW USER
-     * <p>
-     * * @param userRegister
+     * <b>REGISTER NEW USER</b>
+     * <br/>
      *
+     * @param userRegister
      * @return
      */
     @PostMapping("register")
 
     public ResponseEntity<?> addNewUser(@RequestBody @Valid UserRegisterRequest userRegister)
     {
-
         try {
             userRegister.setPassword(passwordEncoder.encode(userRegister.getPassword()));
             var result = userService.register(userRegister);
@@ -66,7 +69,7 @@ public class LoginController
     }
 
     /**
-     * SHOP'S EMPLOYEE LOG IN
+     * <b>SHOP'S EMPLOYEE LOG IN</b>
      *
      * @param userLogin
      * @return
@@ -90,15 +93,10 @@ public class LoginController
             Map<String, Object> data = new TreeMap<>();
             var loginTime = java.time.Instant.ofEpochMilli(user.getLastActiveTime());
             var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                                            .withZone(ZoneId.systemDefault());
+                                             .withZone(ZoneId.systemDefault());
             data.put("loginTime", formatter.format(loginTime));
             data.put("token", token);
             data.put("shops", userDetails.getShopIds());
-            data.put("allowedActions", userDetails.getAuthorities()
-                                                  .stream()
-                                                  .map(GrantedAuthority::getAuthority)
-                                                  .collect(Collectors.toList()));
-
             return ResponseEntity.ok().body(new ResponseObject(
                     200,
                     "OK",
@@ -112,5 +110,23 @@ public class LoginController
                                          e.getMessage()
                                  ));
         }
+    }
+
+    /**
+     * <b>UPDATE AUTHORITY (ACTION) FOR USER</b>
+     *
+     * @param request
+     * @return
+     */
+    @PatchMapping("set-authority")
+    public ResponseEntity<?> setUserActions(@RequestBody SetUserActionRequest request)
+    {
+        //Check for valid user in the database:
+        var foundUser = userService.findById(request.getUserId());
+        if ( foundUser == null ) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid User's Id");
+        }
+        userService.setRoles(foundUser, request.getActionId());
+        return ResponseEntity.ok("User updated.");
     }
 }

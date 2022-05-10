@@ -8,10 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,17 +24,23 @@ public class JwtUtils
     private String createToken(Map<String, Object> claims, String subject)
     {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS512, key)
-                .compact();
+                   .setClaims(claims)
+                   .setSubject(subject)
+                   .setIssuedAt(new Date(System.currentTimeMillis()))
+                   .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                   .signWith(SignatureAlgorithm.HS512, key)
+                   .compact();
     }
 
     public String generateToken(UserDetails userDetails)
     {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("UserName", userDetails.getUsername());
+        claims.put("ActionList", userDetails.getAuthorities()
+                                      .stream()
+                                      .map(GrantedAuthority::getAuthority)
+                                      .collect(Collectors.toSet()));
+
         return createToken(claims, userDetails.getUsername());
     }
 //endregion
@@ -56,6 +59,12 @@ public class JwtUtils
     public String getUsername(String token)
     {
         return extractClaims(token, Claims::getSubject);
+    }
+
+    public Collection<String> getActionList(String token)
+    {
+        final Claims claims = extraction(token);
+        return (Collection<String>) claims.get("ActionList");
     }
 
     public Date getExpiration(String token)

@@ -16,8 +16,6 @@ public interface PrdCategoryRepository extends JpaRepository<PrdCategory, Long>
     @Query("select p from PrdCategory p where p.shop.id = ?1")
     Page<PrdCategory> findCategoryByShopId(Long id, Pageable pageable);
 
-
-
     @Query("select p from PrdCategory p where p.categoryName like concat('%', ?1, '%')")
     Page<PrdCategory> findByName(String categoryName, Pageable pageable);
 

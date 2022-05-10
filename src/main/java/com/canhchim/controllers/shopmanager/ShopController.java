@@ -24,17 +24,20 @@ import java.util.*;
 @RequestMapping(path = "/shop")
 public class ShopController
 {
-    @Autowired
     ProductService productService;
-    @Autowired
     CategoryService categoryService;
-    @Autowired
     UserService userService;
-    @Autowired
     OrderService orderService;
-    @Autowired
     ShopService shopService;
 
+    public ShopController(ProductService productService, CategoryService categoryService, UserService userService, OrderService orderService, ShopService shopService)
+    {
+        this.productService = productService;
+        this.categoryService = categoryService;
+        this.userService = userService;
+        this.orderService = orderService;
+        this.shopService = shopService;
+    }
 
     @GetMapping("category-all")
     public ResponseEntity<?> showAllCategories(
@@ -105,7 +108,6 @@ public class ShopController
         Content content = new Content(shopService.findAllZone(shopId));
         return ResponseEntity.ok().body(new ResponseObject(
                 200, "OK", content
-
         ));
     }
 

@@ -5,11 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Entity
+@AllArgsConstructor @NoArgsConstructor
+@Getter @Setter @Entity
 @Table(name = "SHP_table", indexes = {
         @Index(name = "zone_id", columnList = "zone_id")
 })
@@ -20,14 +17,13 @@ public class ShpTable
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "table_number", nullable = false, length = 10)
+    @Column(name = "table_number", nullable = false, length = 50)
     private String tableName;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "zone_id", nullable = false)
     @JsonIgnore
     private ShpZone zone;
-
 
     @Column(name = "number_of_seat")
     private Integer numberOfSeat;

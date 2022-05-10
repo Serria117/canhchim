@@ -13,6 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor @NoArgsConstructor
 public class NewCategoryRequest implements Serializable
 {
+    Long id = null;
     @NotNull
     Long shopId;
     @NotNull

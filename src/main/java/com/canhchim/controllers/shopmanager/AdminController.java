@@ -10,7 +10,7 @@ import com.canhchim.payload.response.ErrorResponse;
 import com.canhchim.payload.response.ResponseObject;
 import com.canhchim.securityconfig.customuserdetail.CustomUserDetails;
 import com.canhchim.services.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,19 +25,14 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(path = "/shop-admin")
 public class AdminController
 {
-
-    @Autowired
     ProductService productService;
-    @Autowired
     CategoryService categoryService;
-    @Autowired
     FileStorageService fileStorageService;
-    @Autowired
     UserService userService;
-    @Autowired
     ShopService shopService;
 
     @GetMapping("display-action")
@@ -74,10 +69,21 @@ public class AdminController
             if ( !shops.contains(newCategory.getShopId()) ) {
                 throw new RuntimeException("Invalid shopID.");
             }
-            categoryService.addNew(
-                    newCategory.getShopId(), newCategory.getCategoryName(),
-                    newCategory.getCode(), newCategory.getGroupId(),
-                    newCategory.getImage(), newCategory.getDescription());
+
+            if ( newCategory.getId() != null ) {
+                var foundCategory = categoryService.findById(newCategory.getId())
+                                                   .orElseThrow(() -> new RuntimeException("Invalid category ID"));
+                foundCategory.setCategoryName(newCategory.getCategoryName());
+                foundCategory.setCategoryComment(newCategory.getDescription());
+                categoryService.save(foundCategory);
+            }
+            else {
+                categoryService.addNew(
+                        newCategory.getShopId(), newCategory.getCategoryName(),
+                        newCategory.getCode(), newCategory.getGroupId(),
+                        newCategory.getImage(), newCategory.getDescription());
+            }
+
             status = HttpStatus.OK;
             return ResponseEntity.ok().body(new ResponseObject(
                     status.value(),
@@ -98,7 +104,9 @@ public class AdminController
 
     @PostMapping(path = "new-product", consumes = {"application/json"})
     @Validated
-    public ResponseEntity<?> addProduct(@RequestBody @Valid NewProductRequest newProduct, Errors err, Authentication auth)
+    public ResponseEntity<?> addProduct(@RequestBody @Valid NewProductRequest newProduct,
+                                        Errors err,
+                                        Authentication auth)
     {
         HttpStatus status;
         Map<String, String> errorMap = checkError(err);
@@ -134,6 +142,7 @@ public class AdminController
                 productService.save(product);
             }
             else {
+                newProduct.setId(null);
                 product = productService.add(
                         newProduct.getName(), newProduct.getCode(),
                         newProduct.getPrice(), newProduct.getPrice2(), newProduct.getPrice3(),
@@ -161,7 +170,9 @@ public class AdminController
     }
 
     @PostMapping("new-table")
-    public ResponseEntity<?> newTable(@RequestBody @Valid NewTableRequest newTable, Errors err, Authentication auth)
+    public ResponseEntity<?> newTable(
+            @RequestBody @Valid NewTableRequest newTable,
+            Errors err, Authentication auth)
     {
         HttpStatus status;
         Map<String, String> errorMap = checkError(err);
@@ -181,8 +192,19 @@ public class AdminController
                 throw new RuntimeException("The current user does not have authorization for the shop.");
             }
 
-            shopService.newTable(newTable.getShopId(), newTable.getZoneId(),
-                                 newTable.getTableName(), newTable.getNumberOfSeat());
+            if ( newTable.getId() != null || newTable.getId() > 0 ) {
+                var foundTable = shopService.getTableById(newTable.getId())
+                                            .orElseThrow(() -> new RuntimeException("Invalid table ID"));
+
+                foundTable.setTableName(newTable.getTableName());
+                foundTable.setNumberOfSeat(newTable.getNumberOfSeat());
+                shopService.saveTable(foundTable);
+            }
+            else {
+                newTable.setId(null);
+                shopService.newTable(newTable.getShopId(), newTable.getZoneId(),
+                                     newTable.getTableName(), newTable.getNumberOfSeat());
+            }
             status = HttpStatus.OK;
             return ResponseEntity.ok().body(new ResponseObject(
                     status.value(), status.getReasonPhrase(),
@@ -207,7 +229,7 @@ public class AdminController
         Map<String, String> errorMap = checkError(err);
         if ( !errorMap.isEmpty() ) {
             status = HttpStatus.BAD_REQUEST;
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
+            return ResponseEntity.status(status).body(new ErrorResponse(
                     LocalDateTime.now(),
                     status,
                     status.value(),
@@ -220,16 +242,31 @@ public class AdminController
             if ( !shopIds.contains(newZone.getShopId()) ) {
                 throw new RuntimeException("The current user does not have authorization for the shop.");
             }
-            shopService.newZone(newZone.getShopId(), newZone.getZoneName());
+            String message;
+            if ( newZone.getId() != null || newZone.getId() > 0 ) {
+                var foundZone = shopService.getZoneById(newZone.getId())
+                                           .orElseThrow(() -> new RuntimeException("Invalid zone ID"));
+                foundZone.setZoneName(newZone.getZoneName());
+                if ( shopService.existByZoneName(newZone.getZoneName(), newZone.getShopId()) ) {
+                    throw new RuntimeException("The zone name has already existed in the current shop");
+                }
+                shopService.saveZone(foundZone);
+                message = "Zone saved";
+            }
+            else {
+                newZone.setId(null);
+                shopService.newZone(newZone.getShopId(), newZone.getZoneName());
+                message = "Zone '" + newZone.getZoneName() + "' added.";
+            }
             status = HttpStatus.OK;
             return ResponseEntity.ok().body(new ResponseObject(
                     status.value(), status.getReasonPhrase(),
-                    "Zone '" + newZone.getZoneName() + "' added."
+                    message
             ));
         }
         catch ( Exception e ) {
             status = HttpStatus.BAD_REQUEST;
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
+            return ResponseEntity.status(status).body(new ErrorResponse(
                     LocalDateTime.now(),
                     status,
                     status.value(),

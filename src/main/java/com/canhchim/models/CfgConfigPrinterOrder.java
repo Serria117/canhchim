@@ -47,6 +47,9 @@ public class CfgConfigPrinterOrder
     @Column(name = "font_in_string_format", nullable = false, length = 60)
     private String fontInStringFormat;
 
+    @Column(name = "type")
+    private Integer type;
+
     @Lob
     @Column(name = "data_to_print", nullable = false)
     private String dataToPrint;

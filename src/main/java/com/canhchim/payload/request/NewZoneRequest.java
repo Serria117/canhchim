@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Data
 public class NewZoneRequest implements Serializable
 {
+    Long id;
     @NotNull
     Long shopId;
     @NotNull @NotEmpty (message = "Zone name must not be empty.")

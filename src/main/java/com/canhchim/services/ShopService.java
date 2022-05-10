@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShopService
@@ -45,18 +46,34 @@ public class ShopService
                                  .orElseThrow(() -> new RuntimeException("Invalid zone ID")));
         newTable.setTableName(tableName);
         newTable.setNumberOfSeat(numberOfSeat);
-        tableRepo.save(newTable);
+        saveTable(newTable);
     }
 
+    public void saveTable(ShpTable table)
+    {
+        tableRepo.save(table);
+    }
+    public void saveZone(ShpZone zone) {zoneRepo.save(zone);}
+
+    public Optional<ShpTable> getTableById(Long id)
+    {
+        return tableRepo.findById(id);
+    }
+    public Optional<ShpZone> getZoneById(Long id) {return zoneRepo.findById(id);}
     public void newZone(long shopId, String zoneName) throws RuntimeException
     {
-        if( zoneRepo.existsByZoneName(zoneName, shopId) ){
+        if( existByZoneName(zoneName, shopId) ){
             throw new RuntimeException("Zone name already exist.");
         }
         var newZone = new ShpZone();
         newZone.setZoneName(zoneName);
         newZone.setShop(shopRepo.findById(shopId)
                                 .orElseThrow(() -> new RuntimeException("Invalid shop ID")));
-        zoneRepo.save(newZone);
+        saveZone(newZone);
     }
+    public boolean existByZoneName(String zoneName, Long shopId)
+    {
+        return zoneRepo.existsByZoneName(zoneName, shopId);
+    }
+
 }

@@ -10,6 +10,7 @@ import com.canhchim.repositories.ShpShopRepository;
 import com.canhchim.repositories.ShpUserRepository;
 import com.canhchim.securityconfig.customuserdetail.CustomUserDetails;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,15 +21,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@Service @AllArgsConstructor
+@Service
+@AllArgsConstructor
 public class UserService implements UserDetailsService
 {
     ShpUserRepository userRepository;
     ShpShopRepository shopRepository;
     ShpRoleRepository roleRepository;
     ShpShopEmployeeRepository shopEmployeeRepository;
-
+    private final Long[] defaultRole = {1L, 2L, 3L};
 
     /**
      * @param username
@@ -36,7 +39,7 @@ public class UserService implements UserDetailsService
      * @throws UsernameNotFoundException
      */
     @Override
-    public UserDetails loadUserByUsername (String username) throws UsernameNotFoundException
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
         ShpUser user = userRepository.findByUserName(username)
                                      .orElseThrow(() -> new UsernameNotFoundException("Username does not exist"));
@@ -55,12 +58,12 @@ public class UserService implements UserDetailsService
         );
     }
 
-    public ShpUser save (ShpUser newUser)
+    public ShpUser save(ShpUser newUser)
     {
         return userRepository.save(newUser);
     }
 
-    public boolean register (UserRegisterRequest userRegister) throws Exception
+    public boolean register(UserRegisterRequest userRegister) throws Exception
     {
         Set<ShpRole> roles = new HashSet<>();
         var newUser = new ShpUser();
@@ -80,11 +83,13 @@ public class UserService implements UserDetailsService
         if ( userRepository.existsByPhone(newUser.getPhone()) ) {
             throw new Exception("Phone number already existed");
         }
+        if ( userRegister.getRoleId() == null || Arrays.stream(userRegister.getRoleId()).findAny().isEmpty() ) {
+            userRegister.setRoleId(this.defaultRole);
+        }
         Arrays.asList(userRegister.getRoleId())
               .forEach(role -> {
                   roles.add(roleRepository.findById(role).orElse(null));
               });
-
         newUser.setRoles(roles);
         try {
             var savedUser = userRepository.save(newUser);
@@ -104,17 +109,36 @@ public class UserService implements UserDetailsService
         }
     }
 
-    public Map<Long, Object> displayAllRole()
+    public Map<Long, String> displayAllRole()
     {
         var roles = roleRepository.findAll();
-        Map<Long, Object> roleMap = new HashMap<>();
+        Map<Long, String> roleMap = new HashMap<>();
         roles.forEach(r -> {
             roleMap.put(r.getId(), r.getDescription());
         });
         return roleMap;
     }
 
-    public ShpUser findByName (String name)
+    public Map<Long, String> displayRolesOfUser(Long userId) throws Exception
+    {
+        var foundUser = userRepository.findById(userId);
+        var result = new HashMap<Long, String>();
+        if ( foundUser.isEmpty() ) {throw new Exception("User's Id is not presented");} ;
+        foundUser.get().getRoles().forEach(r -> result.put(r.getId(), r.getDescription()));
+        return result;
+    }
+
+    public void setRoles(@NotNull ShpUser user, Long[] roleId)
+    {
+        var roleList = Arrays.stream(roleId)
+                             .filter(id -> roleRepository.existsById(id))
+                             .map(id -> roleRepository.findById(id).orElse(null))
+                             .collect(Collectors.toSet());
+        user.setRoles(roleList);
+        save(user);
+    }
+
+    public ShpUser findByName(String name)
     {
         return userRepository.findByUserName(name).orElse(null);
     }

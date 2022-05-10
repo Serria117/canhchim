@@ -6,7 +6,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -59,10 +58,6 @@ public class ShpShop
     @Column(name = "key_salt", length = 100)
     private String keySalt;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "approved_by_admin")
-//    private SysAdmin sysAdmin;
-
     @OneToMany(mappedBy = "shop")
     private Set<ShpShopEmployee> employee = new LinkedHashSet<>();
 
@@ -77,6 +72,9 @@ public class ShpShop
 
     @OneToMany(mappedBy = "shop")
     private Set<ShpZone> shpZones = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "shop")
+    private Set<PrtPrinterTemp> prtPrinterTemps = new LinkedHashSet<>();
 
     //TODO Reverse Engineering! Migrate other columns to the entity
 }
