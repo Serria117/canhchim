@@ -37,4 +37,7 @@ public class CtmCustomer {
     //private Set<PrdOrder> prdOrders = new LinkedHashSet<>();
 
     //TODO Reverse Engineering! Migrate other columns to the entity
+
+    public CtmCustomer() {
+    }
 }

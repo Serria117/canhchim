@@ -31,7 +31,6 @@ public class AuthenticationController
     UserService userService;
     PasswordEncoder passwordEncoder;
 
-    @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager,
                                     JwtUtils jwtUtils,
                                     UserService userService,
