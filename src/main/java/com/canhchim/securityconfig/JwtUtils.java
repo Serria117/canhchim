@@ -37,9 +37,9 @@ public class JwtUtils
         Map<String, Object> claims = new HashMap<>();
         claims.put("UserName", userDetails.getUsername());
         claims.put("ActionList", userDetails.getAuthorities()
-                                      .stream()
-                                      .map(GrantedAuthority::getAuthority)
-                                      .collect(Collectors.toSet()));
+                                            .stream()
+                                            .map(GrantedAuthority::getAuthority)
+                                            .collect(Collectors.toSet()));
 
         return createToken(claims, userDetails.getUsername());
     }
@@ -64,6 +64,7 @@ public class JwtUtils
     public Collection<String> getActionList(String token)
     {
         final Claims claims = extraction(token);
+        //noinspection unchecked
         return (Collection<String>) claims.get("ActionList");
     }
 

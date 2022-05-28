@@ -32,7 +32,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     UserService userService;
     RequestFilter requestFilter;
 
-    public SecurityConfig(CustomerService customerService, UserService userService, RequestFilter requestFilter)
+    public SecurityConfig(CustomerService customerService,
+                          UserService userService,
+                          RequestFilter requestFilter)
     {
         this.customerService = customerService;
         this.userService = userService;
@@ -40,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder()
+    public PasswordEncoder appPwEncode()
     {
         return new BCryptPasswordEncoder();
     }
@@ -55,8 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     @Override
     protected void configure(HttpSecurity http) throws Exception
     {
-        http.csrf().disable();
-        http.authorizeRequests()
+
+        http.csrf().disable().cors().disable()
+            .authorizeRequests()
             .antMatchers(allowPublic).permitAll()
             .anyRequest().authenticated()
             .and()
@@ -69,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception
     {
-        auth.userDetailsService(customerService).passwordEncoder(passwordEncoder());
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(customerService).passwordEncoder(appPwEncode());
+        auth.userDetailsService(userService).passwordEncoder(appPwEncode());
     }
 }

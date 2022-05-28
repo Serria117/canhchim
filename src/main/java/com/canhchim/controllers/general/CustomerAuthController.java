@@ -1,11 +1,13 @@
 package com.canhchim.controllers.general;
 
+import com.canhchim.customexception.UsernameAlreadyExistException;
 import com.canhchim.models.CtmCustomer;
 import com.canhchim.models.dto.CustomerLoginRequestDTO;
 import com.canhchim.models.dto.CustomerRegisterDTO;
 import com.canhchim.payload.response.ResponseObject;
 import com.canhchim.securityconfig.JwtUtils;
 import com.canhchim.services.CustomerService;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +18,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping(path = "/customer-auth")
-public class CustomerAuthController
-{
+public class CustomerAuthController {
+
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
@@ -32,8 +32,8 @@ public class CustomerAuthController
     PasswordEncoder passwordEncoder;
 
     @PostMapping("login")
-    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequestDTO customerLoginRequestDTO) throws BadCredentialsException
-    {
+    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequestDTO customerLoginRequestDTO)
+            throws BadCredentialsException {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     customerLoginRequestDTO.getUsername(),
@@ -48,8 +48,7 @@ public class CustomerAuthController
     }
 
     @PostMapping("register")
-    public ResponseEntity<?> customerRegister(@Valid @RequestBody CustomerRegisterDTO registerReq)
-    {
+    public ResponseEntity<?> customerRegister(@Valid @RequestBody CustomerRegisterDTO registerReq) {
 
         CtmCustomer newCustomer = new CtmCustomer();
         newCustomer.setCustomerName(registerReq.getUsername());
@@ -58,23 +57,21 @@ public class CustomerAuthController
 
         try {
             var saveCustomer = customerService.register(newCustomer);
-        } catch (Exception e) {
+        } catch (UsernameAlreadyExistException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return ResponseEntity.ok().body("Customer saved");
     }
 
     @PostMapping("checkusername")
-    public ResponseEntity<?> checkUsername(@RequestParam String username)
-    {
+    public ResponseEntity<?> checkUsername(@RequestParam String username) {
         if (customerService.usernameExist(username)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exist.");
         }
         return ResponseEntity.ok("Username is valid.");
     }
 
-    public ResponseEntity<?> checkPhone(@RequestParam String phone)
-    {
+    public ResponseEntity<?> checkPhone(@RequestParam String phone) {
         if (customerService.phoneExist(phone)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Phone number already exist.");
         }
